@@ -2,13 +2,16 @@ import express from 'express'
 import path from 'path'
 import mongoose from 'mongoose'
 import bodyParser from 'body-parser'
+import dotenv from 'dotenv'
 
 import auth from './routes/auth'
 
-const app = express();
+dotenv.config()
+
+const app = express()
 app.use(bodyParser.json())
 
-mongoose.connect('mongodb://localhost/authReactApp', {useNewUrlParser: true})
+mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true})
 
 app.use("/api/auth", auth)
 
