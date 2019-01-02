@@ -5,6 +5,7 @@ import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 
 import auth from './routes/auth'
+import users from './routes/users'
 
 dotenv.config()
 
@@ -14,6 +15,7 @@ app.use(bodyParser.json())
 mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true})
 
 app.use("/api/auth", auth)
+app.use("/api/users", users)
 
 app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'))
