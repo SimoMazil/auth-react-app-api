@@ -1,33 +1,28 @@
 import express from 'express'
+import request from 'request-promise'
+import {parseString} from 'xml2js'
 import authenticate from '../middleware/authenticate';
 
 const router = express.Router()
 router.use(authenticate)
 
 router.get("/search", (req, res) => {
-  res.json({
-    books: [
-      {
-        goodreadsId: 1,
-        title: 'Dead Like You',
-        authors: 'Peter James',
-        covers: [
-          'https://images.gr-assets.com/books/1437326528l/8334881.jpg',
-          'https://images.gr-assets.com/books/1434397666l/25732930.jpg'
-        ],
-        pages: 560
-      },
-      {
-        goodreadsId: 2,
-        title: 'Not Dead Yet',
-        authors: 'Peter James',
-        covers: [
-          'https://images.gr-assets.com/books/1333199674l/13538698.jpg'
-        ],
-        pages: 448
-      }
-    ]
-  })
+  request.get(`https://www.goodreads.com/search/index.xml?key=S1ROvvSssa0V1HUXoF0yg&q=${req.query.q}`).then(
+    result => parseString(result, (err, goodreadsResult) => {
+      res.json({
+        books: goodreadsResult.GoodreadsResponse.search[0].results[0].work.map(
+          work => ({
+            goodreadsId: work.best_book[0].id[0]._,
+            title: work.best_book[0].title[0],
+            authors: work.best_book[0].author[0].name[0],
+            covers: [
+              work.best_book[0].image_url[0]
+            ]
+          })
+        )
+      })
+    })
+  )
 })
 
 export default router
