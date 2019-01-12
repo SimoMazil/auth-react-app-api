@@ -12,7 +12,7 @@ router.post("/", (req, res) => {
     if(user && user.isValidPassword(credentials.password)) {
       res.json({user: user.toAuthJSON()})
     } else {
-      res.status(400).json({errors: {global: "Invalide Credentials !"}})
+      res.status(404).json({errors: {global: "Invalide Credentials !"}})
     }
   })
 })
@@ -35,7 +35,7 @@ router.post("/reset_password_request", (req, res) => {
       sendResetPasswordEmail(user);
       res.json({});
     } else {
-      res.status(400).json({errors: {global: "There is no user with such email."}})
+      res.status(404).json({errors: {global: "There is no user with such email."}})
     }
   })
 })
@@ -54,14 +54,14 @@ router.post("/reset_password", (req, res) => {
   const {password, token} = req.body.data
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if(err) {
-      res.status(400).json({errors: {global: "Invalid token"}})
+      res.status(401).json({errors: {global: "Invalid token"}})
     } else {
       User.findOne({_id: decoded._id}).then(user => {
         if(user) {
           user.setPassword(password)
           user.save().then(() => res.json({}))
         } else {
-          res.status(400).json({errors: {global: "Invalid token"}})
+          res.status(401).json({errors: {global: "Invalid token"}})
         }
       })
     }
