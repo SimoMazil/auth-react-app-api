@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import User from '../models/User'
 
 export default (req, res, next) => {
   let token;
@@ -10,9 +11,11 @@ export default (req, res, next) => {
       if(err) {
         res.status(401).json({errors: {global: "Invalid token"}})
       } else {
-        // get user email from decoded token and pass it to the router with next()
-        req.userEmail = decoded.email
-        next()
+        // get user from decoded token and pass it to the router with next()
+        User.findOne({email: decoded.email}).then(user => {
+          req.currentUser = user;
+          next()
+        })
       }
     })
   } else {
