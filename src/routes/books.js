@@ -8,16 +8,16 @@ import parseErrors from '../utils/parseErrors'
 const router = express.Router()
 router.use(authenticate)
 
-// router.post("/", (req, res) => {
-//   Book.find({userId: req.currentUser._id})
-//   .then(book => res.json({book}))
-// })
+router.get("/", (req, res) => {
+  Book.find({userId: req.currentUser._id})
+  .then(books => res.json({books}))
+})
 
-// router.post("/", (req, res) => {
-//   Book.create({...req.body.book, userId: req.currentUser._id})
-//   .then(book => res.json({book}))
-//   .catch(err => res.status(400).json({errors: parseErrors(err.errors)}))
-// })
+router.post("/", (req, res) => {
+  Book.create({...req.body.book, userId: req.currentUser._id})
+  .then(book => res.json({book}))
+  .catch(err => res.status(400).json({errors: parseErrors(err.errors)}))
+})
 
 router.get("/search", (req, res) => {
   request.get(`https://www.goodreads.com/search/index.xml?key=S1ROvvSssa0V1HUXoF0yg&q=${req.query.q}`).then(
